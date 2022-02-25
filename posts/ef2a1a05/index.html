@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://cdn.jsdelivr.net/npm/hexo-tag-common@0.0.5/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="曾晨"><meta name="copyright" content="曾晨"><meta name="generator" content="Hexo 6.0.0"><meta name="theme" content="hexo-theme-yun"><title>Mysql的学习笔记(二) | 曾晨de小站</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="https://cdn.zengchen233.cn/img/202112241935807.png"><link rel="mask-icon" href="https://cdn.zengchen233.cn/img/202112241935807.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"zengchen233.cn","root":"/","title":["曾","晨","de","小","站"],"version":"1.7.0","mode":"light","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.zengchen233.cn/img/202112201922344.png","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"local_search":{"path":"/search.xml"},"fireworks":{"colors":["255, 105, 180","238, 130, 238","255, 182, 193"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><link rel="stylesheet" href="/css/iconfont.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/iconfont.js"></script><link rel="alternate" href="/atom.xml" title="曾晨de小站" type="application/atom+xml"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><meta name="description" content="简述： 本篇是数据库的学习笔记，仅供自己学习使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql的学习笔记(二)">
+<meta property="og:url" content="https://zengchen233.cn/posts/ef2a1a05/index.html">
+<meta property="og:site_name" content="曾晨de小站">
+<meta property="og:description" content="简述： 本篇是数据库的学习笔记，仅供自己学习使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-31T04:51:47.000Z">
+<meta property="article:modified_time" content="2021-07-07T09:34:24.000Z">
+<meta property="article:author" content="曾晨">
+<meta property="article:tag" content="MySql">
+<meta name="twitter:card" content="summary"></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="曾晨"><img width="96" loading="lazy" src="https://cdn.zengchen233.cn/img/202112201907645.PNG" alt="曾晨"><span class="site-author-status" title="排球是向上的运动啊！">🏐</span></a><div class="site-author-name"><a href="/about/">曾晨</a></div><span class="site-name">曾晨de小站</span><sub class="site-subtitle"></sub><div class="site-desciption">努力考研的博主 - 阿曾</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">32</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">12</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">12</span></a></div><a class="site-state-item hty-icon-button" href="/cloud/" title="有趣的项目"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-rss-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/azeng233" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://gitee.com/azeng233" title="Gitee" target="_blank" style="color:#d81e06"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-Gitee"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/16859539" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bilibili-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/ceng-chen-52-79" title="知乎" target="_blank" style="color:#0084FF"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhihu-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://blog.csdn.net/zengchen233?spm=1000.2115.3001.5343" title="CSDN" target="_blank" style="color:#d81e06"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-csdn1"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8C%E8%A1%A8%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%EF%BC%88%E4%BA%8C%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">数据库和表的基本操作（二）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%BA%E8%A1%A8%E7%9A%84%E6%89%80%E6%9C%89%E5%AD%97%E6%AE%B5%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">1.1.</span> <span class="toc-text">为表的所有字段插入数据</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%BA%E8%A1%A8%E7%9A%84%E6%8C%87%E5%AE%9A%E5%AD%97%E6%AE%B5%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">1.2.</span> <span class="toc-text">为表的指定字段插入数据</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%BA%E8%A1%A8%E5%90%8C%E6%97%B6%E6%8F%92%E5%85%A5%E5%A4%9A%E6%9D%A1%E8%AE%B0%E5%BD%95"><span class="toc-number">1.3.</span> <span class="toc-text">为表同时插入多条记录</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E8%A1%A8%E4%B8%AD%E6%8C%87%E5%AE%9A%E7%9A%84%E5%86%85%E5%AE%B9"><span class="toc-number">1.4.</span> <span class="toc-text">更新表中指定的内容</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E8%A1%A8%E4%B8%AD%E7%9A%84%E6%8C%87%E5%AE%9A%E8%A1%8C"><span class="toc-number">1.5.</span> <span class="toc-text">删除表中的指定行</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E8%A1%A8%E4%B8%AD%E7%9A%84%E6%89%80%E6%9C%89%E8%A1%8C"><span class="toc-number">1.6.</span> <span class="toc-text">删除表中的所有行</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE%E8%A1%A8%E4%B8%AD%E6%8C%87%E5%AE%9A%E5%AD%97%E6%AE%B5%E7%9A%84%E5%86%85%E5%AE%B9"><span class="toc-number">1.7.</span> <span class="toc-text">查询数据表中指定字段的内容</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE%E8%A1%A8%E4%B8%AD%E7%9A%84%E6%89%80%E6%9C%89%E5%86%85%E5%AE%B9"><span class="toc-number">1.8.</span> <span class="toc-text">查询数据表中的所有内容</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%A6IN%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.9.</span> <span class="toc-text">带IN关键字的查询</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%A6NOT-IN%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.10.</span> <span class="toc-text">带NOT IN关键字的查询</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%A6BETWEEN-AND%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.11.</span> <span class="toc-text">带BETWEEN AND关键字的查询</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%A6NOT-BETWEEN-AND%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.12.</span> <span class="toc-text">带NOT BETWEEN AND关键字的查询</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://zengchen233.cn/posts/ef2a1a05/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="曾晨"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="曾晨de小站"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Mysql的学习笔记(二)</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <span class="post-meta-icon-text">发表于</span> <time title="创建时间：2021-05-31 12:51:47" itemprop="dateCreated datePublished" datetime="2021-05-31T12:51:47+08:00">2021-05-31</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <span class="post-meta-icon-text">更新于</span> <time title="修改时间：2021-07-07 17:34:24" itemprop="dateModified" datetime="2021-07-07T17:34:24+08:00">2021-07-07</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">1.6k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">5m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye-line"></use></svg> <span id="busuanzi_value_page_pv"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-chat-3-line"></use></svg> <span class="waline-comment-count" id="/posts/ef2a1a05/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%AD%A6%E4%B9%A0-MySql/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">学习 - MySql</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/MySql/" style="--text-color:#4fc08d"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">MySql</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><p><strong>简述：</strong> 本篇是数据库的学习笔记，仅供自己学习使用。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>本文初发于 <strong>“曾晨de小站”</strong>  <a href="https://zengchen233.cn/">zengchen233.cn</a>，同步转载于此。</p>
+</blockquote>
+<h4 id="数据库和表的基本操作（二）"><a href="#数据库和表的基本操作（二）" class="headerlink" title="数据库和表的基本操作（二）"></a>数据库和表的基本操作（二）</h4><h5 id="为表的所有字段插入数据"><a href="#为表的所有字段插入数据" class="headerlink" title="为表的所有字段插入数据"></a>为表的<u>所有</u>字段插入数据</h5><p>向表中插入数据最简单的方法就是使用<code>INSERT</code>语句。<code>INSERT</code>语句需要你声明要插入内容的表<code>(table)</code>名和内容<code>(values)</code>。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">INSERT INTO 表名 (字段名) VALUES (内容);</code></pre>
+
+<p><code>分析:</code>在插入数据时，我们指定了所有的字段名，这样的好处是：即使我们打乱了原本字段的排列顺序，只要插入的数据与之匹配，插入都不会出错。其实，还有一种偷懒的办法，就是我们可以不填字段名，但是这样的话，就必须老老实实的按字段顺序来填入相应的数据。</p>
+<h5 id="为表的指定字段插入数据"><a href="#为表的指定字段插入数据" class="headerlink" title="为表的指定字段插入数据"></a>为表的<u>指定</u>字段插入数据</h5><p>有的时候，我们并不想往某个字段内插入完完整整的值，或者说，有的时候我们并没有完整的数据可以整整齐齐插入某个字段。这时候就需要我们只为指定好的字段插入数据了，其他的我们都不用管。换句话说，就是： 为表的指定字段插入数据，就是在<code>INSERT</code>中只向部分插入值，而其他字段的值为表定义时的默认值。</p>
+<blockquote>
+<p>如果我们建表时给字段设置的默认值为<code>Null</code>，所以插入数据时忽略该字段，就会默认给它赋值为空。</p>
+</blockquote>
+<h5 id="为表同时插入多条记录"><a href="#为表同时插入多条记录" class="headerlink" title="为表同时插入多条记录"></a>为表同时插入多条记录</h5><p>当然，一条一条插入数据很繁琐，有没有“打包”的方法呀？有，还有一种方法能同时让我们插入好几条数据。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">INSERT INTO 表名 (字段名) VALUES (内容1), (内容2), (内容3);</code></pre>
+
+<h5 id="更新表中指定的内容"><a href="#更新表中指定的内容" class="headerlink" title="更新表中指定的内容"></a>更新表中指定的内容</h5><p>通过上一关的学习，我们已经掌握了<code>INSERT</code>操作！同样，<code>UPDATE</code>操作也很简单，只要记住<code>UPDATE</code>语句三要素就能轻松掌握，它们分别是:</p>
+<ul>
+<li>需要更新的<code>表（table）名</code>；</li>
+<li>需要更新的<code>字段（column）名</code>和它的<code>新内容（value）</code>；</li>
+<li>决定更新<code>哪一条内容（value）</code>的<code>过滤条件</code>。</li>
+</ul>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">UPDATE 表名 SET 字段名1 &#x3D; 内容1, 字段名2 &#x3D; 内容2, 字段名3 &#x3D; 内容3 WHERE 过滤条件;</code></pre>
+
+<h5 id="删除表中的指定行"><a href="#删除表中的指定行" class="headerlink" title="删除表中的指定行"></a>删除表中的指定行</h5><p>从数据表中删除数据内容需要使用<code>DELETE</code>语句，它需要<code>WHERE</code>语句来配合它来指定我们究竟应该删除哪些数据内容。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">DELETE FROM 表名 WHERE 条件语句; </code></pre>
+
+<h5 id="删除表中的所有行"><a href="#删除表中的所有行" class="headerlink" title="删除表中的所有行"></a>删除表中的所有行</h5><p>删除表中的所有行就更简单了。如果需要删除表中所有的行，只需要省略<code>WHERE</code>语句即可。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">DELETE FROM 表名; </code></pre>
+
+<div class="warning">
+
+<blockquote>
+<p>小提示： TRUNCATE TABLE 语句也可以用来删除表中的所有记录。但是与 DELETE 不同的是，TRUNCATE TABLE 语句直接删除的是表，而不是表中的内容，删除结束后还会重新创建一个表。所以它的执行速度会比 DELETE 语句快。 语法为：<code>TRUNCATE TABLE 表名;</code></p>
+</blockquote>
+</div>
+
+<h5 id="查询数据表中指定字段的内容"><a href="#查询数据表中指定字段的内容" class="headerlink" title="查询数据表中指定字段的内容"></a>查询数据表中指定字段的内容</h5><p><code>MySQL</code>从数据表中查询数据的基本语句为<code>SELECT</code>语句。</p>
+<p><code>SELECT</code>语句的可选参数比较多，让我们先从最简单的开始，带大家一步一步的深入<code>SELECT</code>语句的使用。</p>
+<p>SELECT 基本语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT 字段名 FROM 表名; </code></pre>
+
+<p>分析：</p>
+<p>我们查询数据的时候，往往需要同时查询<code>多个字段</code>下的内容。这时，我们只需要在<code>字段之间</code>加入逗号<code>,</code>即可。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT 字段名1, 字段名2 FROM 表名; </code></pre>
+
+<div class="warning">
+
+<blockquote>
+<p>小提示： MySQL 中的 SQL 语句对关键字的大小写不敏感， SELECT 和 select 是一样的。 但是许多开发者更喜欢将关键字大写，表名和字段名使用小写，养成这种习惯，以后写出来的脚本就更容易阅读和维护了。</p>
+</blockquote>
+</div>
+
+<h5 id="查询数据表中的所有内容"><a href="#查询数据表中的所有内容" class="headerlink" title="查询数据表中的所有内容"></a>查询数据表中的所有内容</h5><p>如果我们不记得字段名字了，我们还可以查看整张表的内容。这时候，只需要我们用星号<code>*</code>来代替字段的名字，就会得到一整张表的内容。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT * FROM 表名;</code></pre>
+
+<div class="warning">
+
+<blockquote>
+<p>小提示： 虽然使用星号 * 看起来是一件很方便的事情，但是建议大家在不想获取整张表的情况下，还是使用字段名来进行查询。因为很显然，它会降低查询的效率。</p>
+</blockquote>
+</div>
+
+<h5 id="带IN关键字的查询"><a href="#带IN关键字的查询" class="headerlink" title="带IN关键字的查询"></a>带<code>IN</code>关键字的查询</h5><p><code>IN</code>关键字被用在<code>WHERE</code>语句的后边，用来过滤你所需要查询的内容。更形象的说，<code>IN</code>关键字的使用情形就像点名，点到谁谁就要站出来。</p>
+<p>语法规则为： </p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT 字段名 FROM 表名 WHERE 字段名 IN (n1,n2,n3,...);</code></pre>
+
+<p>其中，括号内的数字必须为<code>INT</code>格式的数字。被“点到名”的这些括号里数字对应的内容，都要乖乖的站到前边来展示给大家看。</p>
+<h5 id="带NOT-IN关键字的查询"><a href="#带NOT-IN关键字的查询" class="headerlink" title="带NOT IN关键字的查询"></a>带<code>NOT IN</code>关键字的查询</h5><p>聪明的小伙伴一看<code>NOT</code>就知道了，我们是要取反了。刚才我们是在查询括号中出现的内容，加了<code>NOT</code>取反后，就意味着，我们要查询的是除了括号中出现内容外的所有内容。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT 字段名 FROM 表名 WHERE 字段名 NOT IN (n1,n2,n3,...); </code></pre>
+
+<h5 id="带BETWEEN-AND关键字的查询"><a href="#带BETWEEN-AND关键字的查询" class="headerlink" title="带BETWEEN AND关键字的查询"></a>带<code>BETWEEN AND</code>关键字的查询</h5><p>我们已经学会了如何用<code>IN</code>关键字精确查询数据表中的内容，但是在很多时候，我们仅仅是想知道在某一范围内有多少符合条件的数据，这就不得不使用到关键字<code>BETWEEN AND</code>了。</p>
+<p><code>BETWEEN AND</code>需要两个参数支持，一个是范围的开始值，另一个就是结束值了。如果字段值满足指定的范围查询条件，就返回这些满足条件的数据内容。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT 字段名 FROM 表名 WHERE 字段名 BETWEEN n1 AND n2; </code></pre>
+
+<h5 id="带NOT-BETWEEN-AND关键字的查询"><a href="#带NOT-BETWEEN-AND关键字的查询" class="headerlink" title="带NOT BETWEEN AND关键字的查询"></a>带<code>NOT BETWEEN AND</code>关键字的查询</h5><p>像上一关介绍的关键字<code>IN</code>一样，我们还可以对关键字<code>BETWEEN AND</code>进行取反，表示查询指定范围之外的值。</p>
+<p>语法规则为：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">SELECT 字段名 FROM 表名 WHERE 字段名 NOT BETWEEN n1 AND n2; </code></pre>
+
+</div><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-hand-coin-line"></use></svg></span><div id="reward-comment">I'm so poor, Could you give me money?</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.zengchen233.cn/img/202112251913240.png"><img loading="lazy" src="https://cdn.zengchen233.cn/img/202112251913240.png" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-alipay-line"></use></svg></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.zengchen233.cn/img/202112251913559.png"><img loading="lazy" src="https://cdn.zengchen233.cn/img/202112251913559.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-wechat-pay-line"></use></svg></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>曾晨</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://zengchen233.cn/posts/ef2a1a05/" title="Mysql的学习笔记(二)">https://zengchen233.cn/posts/ef2a1a05/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/ced5124b/" rel="prev" title="阿里云服务器nginx上部署SSL证书实现https访问"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">阿里云服务器nginx上部署SSL证书实现https访问</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/c30254d7/" rel="next" title="MySql的学习笔记(一)"><span class="post-nav-text">MySql的学习笔记(一)</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>要不要和我说些什么？</span><br></div><div id="waline"></div><script>Yun.utils.getScript("https://cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js", () => {
+  const walineConfig = {"enable":true,"serverURL":"https://blog-comments-phi.vercel.app/","comment":true,"emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/bilibili","https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/weibo"],"locale":{"placeholder":"快来评论一下吧~","admin":"博主"},"el":"#waline","lang":"zh-CN"}
+  walineConfig.path = "/posts/ef2a1a05/"
+  walineConfig.dark = 'html[data-user-color-scheme="dark"]'
+  new Waline(walineConfig)
+}, window.Waline);</script></div></main><footer class="sidebar-translate" id="footer"><div class="beian"><a rel="noopener" href="https://beian.miit.gov.cn/" target="_blank">鄂ICP备20014277号-1</a></div><div class="copyright"><span>&copy; 2020 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> 曾晨</span></div><div class="live_time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-06-15T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = " " + passDay + " 天 " + passHour + " 小时 " + passMinute + " 分 " + passSecond + " 秒";
+}
+blog_live_time();
+</script></div><div id="busuanzi"><span id="busuanzi_container_site_uv" title="总访客量"><span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye-line"></use></svg></span><span id="busuanzi_value_site_pv"></span></span><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div class="footer-support"><span>本网站由</span><a class="footer-support-logo" href="https://www.upyun.com/?utm_source=lianmeng&amp;utm_medium=referral" target="blank" title="又拍云"><img height="30" src="https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/logo/upyun-logo.png" alt="又拍云"></a><span>提供 CDN 加速</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div><!-- hexo injector body_end start --><script src="https://cdn.jsdelivr.net/npm/hexo-tag-common@0.0.5/js/index.js"></script><!-- hexo injector body_end end --></body></html>

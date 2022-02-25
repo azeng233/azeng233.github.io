@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://cdn.jsdelivr.net/npm/hexo-tag-common@0.0.5/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="曾晨"><meta name="copyright" content="曾晨"><meta name="generator" content="Hexo 6.0.0"><meta name="theme" content="hexo-theme-yun"><title>Mysql的学习笔记(四) | 曾晨de小站</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.25/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-okaidia.css" media="(prefers-color-scheme: dark)"><link rel="icon" type="image/png" href="https://cdn.zengchen233.cn/img/202112241935807.png"><link rel="mask-icon" href="https://cdn.zengchen233.cn/img/202112241935807.png" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"zengchen233.cn","root":"/","title":["曾","晨","de","小","站"],"version":"1.7.0","mode":"light","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.zengchen233.cn/img/202112201922344.png","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"local_search":{"path":"/search.xml"},"fireworks":{"colors":["255, 105, 180","238, 130, 238","255, 182, 193"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><link rel="stylesheet" href="/css/iconfont.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><script src="/js/iconfont.js"></script><link rel="alternate" href="/atom.xml" title="曾晨de小站" type="application/atom+xml"><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><meta name="description" content="简述：  本篇是数据库的学习笔记，仅供自己学习使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql的学习笔记(四)">
+<meta property="og:url" content="https://zengchen233.cn/posts/6b9ad521/index.html">
+<meta property="og:site_name" content="曾晨de小站">
+<meta property="og:description" content="简述：  本篇是数据库的学习笔记，仅供自己学习使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-07T09:15:52.000Z">
+<meta property="article:modified_time" content="2021-07-07T09:34:38.000Z">
+<meta property="article:author" content="曾晨">
+<meta property="article:tag" content="MySql">
+<meta name="twitter:card" content="summary"></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="曾晨"><img width="96" loading="lazy" src="https://cdn.zengchen233.cn/img/202112201907645.PNG" alt="曾晨"><span class="site-author-status" title="排球是向上的运动啊！">🏐</span></a><div class="site-author-name"><a href="/about/">曾晨</a></div><span class="site-name">曾晨de小站</span><sub class="site-subtitle"></sub><div class="site-desciption">努力考研的博主 - 阿曾</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">32</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">12</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">12</span></a></div><a class="site-state-item hty-icon-button" href="/cloud/" title="有趣的项目"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-rss-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/azeng233" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://gitee.com/azeng233" title="Gitee" target="_blank" style="color:#d81e06"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-Gitee"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/16859539" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bilibili-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/ceng-chen-52-79" title="知乎" target="_blank" style="color:#0084FF"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhihu-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://blog.csdn.net/zengchen233?spm=1000.2115.3001.5343" title="CSDN" target="_blank" style="color:#d81e06"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-csdn1"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8C%E8%A1%A8%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%EF%BC%88%E5%9B%9B%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">数据库和表的基本操作（四）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.1.</span> <span class="toc-text">内连接查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%96%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.2.</span> <span class="toc-text">外连接查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E5%90%88%E6%9D%A1%E4%BB%B6%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.3.</span> <span class="toc-text">复合条件连接查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8having%E5%AD%90%E5%8F%A5%E8%BF%9B%E8%A1%8C%E5%88%86%E7%BB%84%E7%AD%9B%E9%80%89"><span class="toc-number">1.4.</span> <span class="toc-text">使用having子句进行分组筛选</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Having%E4%B8%8EWhere%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.5.</span> <span class="toc-text">Having与Where的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Group-By-%E5%92%8C-Order-By"><span class="toc-number">1.6.</span> <span class="toc-text">Group By 和 Order By</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#COUNT-%E5%87%BD%E6%95%B0%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-number">1.7.</span> <span class="toc-text">COUNT()函数基本使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SUM-%E5%87%BD%E6%95%B0%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-number">1.8.</span> <span class="toc-text">SUM()函数基本使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AVG-%E5%87%BD%E6%95%B0%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-number">1.9.</span> <span class="toc-text">AVG()函数基本使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MAX-%E5%87%BD%E6%95%B0%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-number">1.10.</span> <span class="toc-text">MAX()函数基本使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MIN-%E5%87%BD%E6%95%B0%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-number">1.11.</span> <span class="toc-text">MIN()函数基本使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%86%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.12.</span> <span class="toc-text">视图的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%A7%86%E5%9B%BE"><span class="toc-number">1.13.</span> <span class="toc-text">创建视图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E8%A7%86%E5%9B%BE"><span class="toc-number">1.14.</span> <span class="toc-text">操作视图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E8%A7%86%E5%9B%BE"><span class="toc-number">1.15.</span> <span class="toc-text">删除视图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.16.</span> <span class="toc-text">存储过程的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA%E5%92%8C%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.17.</span> <span class="toc-text">存储过程的创建和查询</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E7%9A%84%E6%9F%A5%E8%AF%A2%E5%92%8C%E5%88%A0%E9%99%A4"><span class="toc-number">1.17.1.</span> <span class="toc-text">存储过程的查询和删除</span></a></li></ol></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://zengchen233.cn/posts/6b9ad521/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="曾晨"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="曾晨de小站"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Mysql的学习笔记(四)</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <span class="post-meta-icon-text">发表于</span> <time title="创建时间：2021-07-07 17:15:52" itemprop="dateCreated datePublished" datetime="2021-07-07T17:15:52+08:00">2021-07-07</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">2.5k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">9m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye-line"></use></svg> <span id="busuanzi_value_page_pv"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-chat-3-line"></use></svg> <span class="waline-comment-count" id="/posts/6b9ad521/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%AD%A6%E4%B9%A0-MySql/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">学习 - MySql</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/MySql/" style="--text-color:#4fc08d"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">MySql</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><p><strong>简述：</strong>  本篇是数据库的学习笔记，仅供自己学习使用。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>本文初发于 <strong>“曾晨de小站”</strong>  <a href="https://zengchen233.cn/">zengchen233.cn</a>，同步转载于此。</p>
+</blockquote>
+<h3 id="数据库和表的基本操作（四）"><a href="#数据库和表的基本操作（四）" class="headerlink" title="数据库和表的基本操作（四）"></a>数据库和表的基本操作（四）</h3><h4 id="内连接查询"><a href="#内连接查询" class="headerlink" title="内连接查询"></a>内连接查询</h4><ul>
+<li>仅将两个表中满足连接条件的行组合起来作为结果集，称为内连接；</li>
+<li>关键字：<code>[inner] join ...  on</code>。</li>
+</ul>
+<p>语法：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql">表<span class="token number">1</span> <span class="token punctuation">[</span><span class="token keyword">inner</span><span class="token punctuation">]</span> <span class="token keyword">join</span> 表<span class="token number">2</span> <span class="token keyword">on</span> 表<span class="token number">1.</span>字段<span class="token operator">=</span>表<span class="token number">2.</span>字段</code></pre>
+
+<p>语法解释：</p>
+<pre class="language-none"><code class="language-none">从表1中取出每一条记录，去表2中与所有的记录进行匹配，匹配必须是某个条件在表1中与表2中相同，最终才会保留结果，否则不保留。inner 关键字可省略不写；on 表示连接条件：条件字段就是代表相同的业务含义（如下面两张表中的 employee.dept_id 和 department.id），大多数情况下为两张表中的主外键关系。</code></pre>
+
+<h4 id="外连接查询"><a href="#外连接查询" class="headerlink" title="外连接查询"></a>外连接查询</h4><ul>
+<li>以某张表为主，取出里面的所有记录，然后每条与另外一张表进行连接，不管能不能匹配上条件，最终都会保留。能匹配，正确保留；不能匹配，其它表的字段都置空（<code>null</code>），称为外连接。</li>
+<li>外连接查询分为左外连接查询和右外连接查询；</li>
+<li>关键字：<code>left/right [outer] join ... on</code>。</li>
+</ul>
+<p>语法：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql">表<span class="token number">1</span> <span class="token keyword">left</span><span class="token operator">/</span><span class="token keyword">right</span> <span class="token punctuation">[</span><span class="token keyword">outer</span><span class="token punctuation">]</span>  <span class="token keyword">join</span> 表<span class="token number">2</span> <span class="token keyword">on</span> 表<span class="token number">1.</span>字段<span class="token operator">=</span>表<span class="token number">2.</span>字段</code></pre>
+
+<p>语法解释：</p>
+<pre class="language-none"><code class="language-none">左外连接：在内连接的基础上，还包含表1中所有不符合条件的数据行，并在其中的表2列填写 NULL；
+右外连接：在内连接的基础上，还包含表2中所有不符合条件的数据行，并在其中的表1列填写 NULL。</code></pre>
+
+<blockquote>
+<p>Tips：虽然左外连接和右外连接有主表差异，但左外连接和右外连接可以互转。</p>
+</blockquote>
+<h4 id="复合条件连接查询"><a href="#复合条件连接查询" class="headerlink" title="复合条件连接查询"></a>复合条件连接查询</h4><ul>
+<li>复合条件连接查询，就是在连接查询的过程中，通过添加过滤条件来限制查询结果，使查询结果更加精确。</li>
+</ul>
+<h4 id="使用having子句进行分组筛选"><a href="#使用having子句进行分组筛选" class="headerlink" title="使用having子句进行分组筛选"></a>使用<code>having</code>子句进行分组筛选</h4><p>简单来说，<code>having</code>子句用来对<strong>分组后</strong>的数据进行筛选，即<code>having</code>针对查询结果中的列发挥筛选数据作用。因此<code>having</code>通常与<code>Group by</code>连用。</p>
+<p>基本格式：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token punctuation">[</span>聚合函数<span class="token punctuation">]</span> 字段名 <span class="token keyword">from</span> 表名 <span class="token punctuation">[</span><span class="token keyword">where</span> 查询条件<span class="token punctuation">]</span>　<span class="token punctuation">[</span><span class="token keyword">group</span> <span class="token keyword">by</span> 字段名<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token keyword">having</span> 字段名 筛选条件<span class="token punctuation">]</span></code></pre>
+
+<p><code>select</code>语句中，<code>where</code>、<code>group by</code>、<code>having</code>子句和聚合函数的执行次序如下：</p>
+<p>1.<code>where</code>子句从数据源中去除不符合条件的数据；</p>
+<p>2.然后<code>group by</code>子句搜集数据行到各个组中；</p>
+<p>3.接着统计函数为各个组计算统计值；</p>
+<p>4.最后<code>having</code>子句去掉不符合其组搜索条件的各组数据行。</p>
+<h4 id="Having与Where的区别"><a href="#Having与Where的区别" class="headerlink" title="Having与Where的区别"></a><code>Having</code>与<code>Where</code>的区别</h4><p><code>where</code>子句都可以用<code>having</code>代替，区别在于<code>where</code>过滤行，<code>having</code>过滤分组；</p>
+<ul>
+<li><code>where</code>子句的作用是在对查询结果进行分组前，将不符合<code>where</code>条件的<strong>行</strong>去掉，即在分组之前过滤数据，<code>where</code>条件中<strong>不能包含聚组函数</strong>，使用<code>where</code>条件过滤出特定的行；</li>
+<li><code>having</code>子句的作用是筛选满足条件的<strong>组</strong>，即在分组之后过滤数据，条件中<strong>经常包含聚组函数</strong>，使用<code>having</code>条件过滤出特定的组，也可以使用多个分组标准进行分组。</li>
+</ul>
+<h4 id="Group-By-和-Order-By"><a href="#Group-By-和-Order-By" class="headerlink" title="Group By 和 Order By"></a><code>Group By</code> 和 <code>Order By</code></h4><p>基本格式：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token punctuation">[</span>聚合函数<span class="token punctuation">]</span> 字段名 <span class="token keyword">from</span> 表名 <span class="token punctuation">[</span><span class="token keyword">where</span> 查询条件<span class="token punctuation">]</span>　<span class="token punctuation">[</span><span class="token keyword">group</span> <span class="token keyword">by</span> 字段名<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token keyword">order</span> <span class="token keyword">by</span> 字段名 排序方向<span class="token punctuation">]</span></code></pre>
+
+<p>Tips：若分组字段和排序字段一样时，可不需要<code>order by</code>关键字，则只需告知排序方向。</p>
+<h4 id="COUNT-函数基本使用"><a href="#COUNT-函数基本使用" class="headerlink" title="COUNT()函数基本使用"></a>COUNT()函数基本使用</h4><p><code>COUNT()</code>函数是用来统计记录的总条数。</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token operator">/</span>字段名<span class="token punctuation">)</span> <span class="token keyword">from</span> 数据表<span class="token punctuation">;</span></code></pre>
+
+<h4 id="SUM-函数基本使用"><a href="#SUM-函数基本使用" class="headerlink" title="SUM()函数基本使用"></a>SUM()函数基本使用</h4><p><code>SUM()</code>函数是对数据表的某列进行求和操作。</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">sum</span><span class="token punctuation">(</span>字段名<span class="token punctuation">)</span> <span class="token keyword">from</span> 数据表<span class="token punctuation">;</span></code></pre>
+
+<h4 id="AVG-函数基本使用"><a href="#AVG-函数基本使用" class="headerlink" title="AVG()函数基本使用"></a>AVG()函数基本使用</h4><p><code>AVG()</code>函数是对数据表的某列进行求平均值操作。</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">avg</span><span class="token punctuation">(</span>字段名<span class="token punctuation">)</span> <span class="token keyword">from</span> 数据表<span class="token punctuation">;</span></code></pre>
+
+<h4 id="MAX-函数基本使用"><a href="#MAX-函数基本使用" class="headerlink" title="MAX()函数基本使用"></a>MAX()函数基本使用</h4><p><code>MAX()</code>函数是求某列的最大数值。</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">max</span><span class="token punctuation">(</span>字段名<span class="token punctuation">)</span> <span class="token keyword">from</span> 数据表<span class="token punctuation">;</span></code></pre>
+
+<h4 id="MIN-函数基本使用"><a href="#MIN-函数基本使用" class="headerlink" title="MIN()函数基本使用"></a><code>MIN()</code>函数基本使用</h4><p><code>MIN()</code>函数是求某列的最小数值。</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">min</span><span class="token punctuation">(</span>字段名<span class="token punctuation">)</span> <span class="token keyword">from</span> 数据表</code></pre>
+
+<h4 id="视图的定义"><a href="#视图的定义" class="headerlink" title="视图的定义"></a>视图的定义</h4><p>视图（<code>view</code>）是一种虚拟存在的表，是一个逻辑表，本身并不包含数据。通过视图，可以展现基表（用来创建视图的表）的部分数据；视图数据来自定义视图的查询表。</p>
+<p>我们知道了视图的定义，那么，为什么要使用它呢？</p>
+<p>因为视图有如下优点：</p>
+<p>①. 简单：使用视图的用户完全不需要关心后面对应的表的结构、关联条件和筛选条件，对用户来说已经是过滤好的复合条件的结果集；</p>
+<p>②. 安全：使用视图的用户只能访问他们被允许查询的结果集，对表的权限管理并不能限制到某个行或列，但是通过视图就可以简单的实现；</p>
+<p>③. 数据独立：一旦视图的结构确定了，可以屏蔽表结构变化对用户的影响，源表增加列队视图没有影响；源表修改列名，则可以通过修改视图来解决，不会造成对访问者的影响。</p>
+<p>总而言之，使用视图的大部分情况是为了<strong>保障数据安全性，提高查询效率</strong>。</p>
+<h4 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h4><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token punctuation">[</span><span class="token operator">OR</span> <span class="token keyword">REPLACE</span><span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token keyword">ALGORITHM</span> <span class="token operator">=</span> &#123;<span class="token keyword">UNDEFINED</span> <span class="token operator">|</span> <span class="token keyword">MERGE</span> <span class="token operator">|</span> <span class="token keyword">TEMPTABLE</span>&#125;<span class="token punctuation">]</span>
+    <span class="token keyword">VIEW</span> view_name <span class="token punctuation">[</span><span class="token punctuation">(</span>column_list<span class="token punctuation">)</span><span class="token punctuation">]</span>
+    <span class="token keyword">AS</span> select_statement
+   <span class="token punctuation">[</span><span class="token keyword">WITH</span> <span class="token punctuation">[</span><span class="token keyword">CASCADED</span> <span class="token operator">|</span> <span class="token keyword">LOCAL</span><span class="token punctuation">]</span> <span class="token keyword">CHECK</span> <span class="token keyword">OPTION</span><span class="token punctuation">]</span></code></pre>
+
+<p>参数说明：</p>
+<ul>
+<li><code>OR REPLACE</code>：表示替换已有视图；</li>
+<li><code>ALGORITHM</code>：表示视图选择算法，默认算法是<code>UNDEFINED</code>(未定义的)： <code>MySQL</code> 自动选择要使用的算法 ；<code>merge</code>合并；<code>temptable</code>临时表；</li>
+<li><code>column_list</code>：可选参数，指定视图中各个属性的名词，默认情况下与<code>select</code>语句中查询的属性相同；</li>
+<li><code>select_statement</code>：表示<code>select</code>语句；</li>
+<li><code>[WITH [CASCADED | LOCAL] CHECK OPTION]</code>：表示视图在更新时保证在视图的权限范围之内；<code>cascade</code>是默认值，表示更新视图的时候，要满足视图和表的相关条件；<code>local</code>表示更新视图的时候，要满足该视图定义的一个条件即可。</li>
+</ul>
+<p>在实际开发中，用户可以根据自己的需求，通过视图的方式，获取基本表中自己需要的数据，这样既能满足用户的需求，也不会破坏基本表原来的结构，从而保证了基本表中数据的安全性。</p>
+<h4 id="操作视图"><a href="#操作视图" class="headerlink" title="操作视图"></a>操作视图</h4><p>视图是逻辑表，也就是说视图不是真实的表，但操作视图和操作普通表的语法是一样的。</p>
+<p>用户可以在视图中无条件地使用<code>select</code>语句查询数据。但使用<code>insert</code>、<code>update</code>和<code>delete</code>操作需要<strong>在创建视图时</strong>满足以下条件（满足以下条件的视图称为<strong>可更新视图</strong>）：</p>
+<ul>
+<li><code>from</code>子句中只能引用有<code>1</code>个表（真实表或可更新视图）；</li>
+<li>不能包含 <code>with</code>、<code>distinct</code>、<code>group by</code>、<code>having</code>、<code>limit</code>等子句；</li>
+<li>不能使用复合查询，即不能使用<code>union</code>、<code>intersect</code>、<code>except</code>等集合操作；</li>
+<li><code>select</code>子句的字段列表不能包含聚合、窗口函数、集合返回函数。</li>
+</ul>
+<h4 id="删除视图"><a href="#删除视图" class="headerlink" title="删除视图"></a>删除视图</h4><p>若视图不再被需要，我们可以将其删除，且视图的删除并不影响源表中的数据。</p>
+<p>删除视图的 SQL 如下：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">DROP</span> <span class="token keyword">VIEW</span> view_name<span class="token punctuation">;</span></code></pre>
+
+<h4 id="存储过程的定义"><a href="#存储过程的定义" class="headerlink" title="存储过程的定义"></a>存储过程的定义</h4><p><strong>存储过程</strong>（<code>Stored Procedure</code>）是一种在数据库中存储复杂程序，以便外部程序调用的一种数据库对象。</p>
+<p>存储过程是为了完成特定功能的 <code>SQL</code> 语句集，经编译创建并保存在数据库中，用户可通过指定存储过程的名字并给定参数（需要时）来调用执行。</p>
+<p>存储过程思想上很简单，就是数据库 <code>SQL</code> 语言层面的代码<strong>封装与重用</strong>。</p>
+<p>简单的说存储过程就是具有名字的一段代码，用来完成一个特定的功能。</p>
+<h4 id="存储过程的创建和查询"><a href="#存储过程的创建和查询" class="headerlink" title="存储过程的创建和查询"></a>存储过程的创建和查询</h4><p>创建存储过程：<code>create procedure 存储过程名(参数) </code></p>
+<ul>
+<li>下面我们来创建第一个存储过程</li>
+</ul>
+<p>每个存储的程序都包含一个由 <code>SQL</code> 语句组成的主体。此语句可能是由以分号（<code>;</code>）字符分隔的多个语句组成的复合语句。例如：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">PROCEDURE</span> proc1<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">BEGIN</span>
+<span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> <span class="token keyword">user</span><span class="token punctuation">;</span>
+<span class="token keyword">END</span><span class="token punctuation">;</span></code></pre>
+
+<p>在命令行客户端中，如果有一行命令以分号结束，那么回车后，<code>MySQL</code> 将会执行该命令，但在创建存储过程中我们并不希望 <code>MySQL</code> 这么做。</p>
+<p><code>MySQL</code> 本身将分号识别为语句分隔符，因此必须临时重新定义分隔符以使 MySQL 将整个存储的程序定义传递给服务器。</p>
+<p>要重新定义 <code>MySQL</code> 分隔符，请使用该 <code>delimiter</code>命令。使用 <code>delimiter</code> 首先将结束符定义为<code>//</code>，完成创建存储过程后，使用<code>//</code>表示结束，然后将分隔符重新设置为分号（<code>;</code>）：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">DELIMITER</span> <span class="token comment">//</span>
+<span class="token keyword">CREATE</span> <span class="token keyword">PROCEDURE</span> proc1<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">BEGIN</span>
+<span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> <span class="token keyword">user</span><span class="token punctuation">;</span>
+<span class="token keyword">END</span> <span class="token comment">//</span>
+<span class="token keyword">DELIMITER</span> <span class="token punctuation">;</span></code></pre>
+
+<p>注意：<code>/</code>也可以换成其他符号，例如<code>$</code>;</p>
+<ul>
+<li><p>执行存储过程：<code>call 存储过程名</code></p>
+</li>
+<li><p>创建带有参数的存储过程 存储过程的参数有三种：</p>
+<ul>
+<li><code>IN</code>：输入参数，也是默认模式，表示该参数的值必须在调用存储过程时指定，在存储过程中修改该参数的值不能被返回；</li>
+<li><code>OUT</code>：输出参数，该值可在存储过程内部被改变，并可返回；</li>
+<li><code>INOUT</code>：输入输出参数，调用时指定，并且可被改变和返回。</li>
+</ul>
+</li>
+</ul>
+<h5 id="存储过程的查询和删除"><a href="#存储过程的查询和删除" class="headerlink" title="存储过程的查询和删除"></a>存储过程的查询和删除</h5><p>我们如何在数据库中查询我们已经创建过的存储过程呢：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">SHOW</span> <span class="token keyword">PROCEDURE</span> <span class="token keyword">STATUS</span> <span class="token keyword">WHERE</span> db<span class="token operator">=</span><span class="token string">'数据库名'</span><span class="token punctuation">;</span></code></pre>
+
+<p>查看存储过程的详细定义信息：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">SHOW</span> <span class="token keyword">CREATE</span> <span class="token keyword">PROCEDURE</span> 数据库<span class="token punctuation">.</span>存储过程名<span class="token punctuation">;</span></code></pre>
+
+<p>当我们不再需要某个存储过程时，我们可以使用：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">DROP</span> <span class="token keyword">PROCEDURE</span> <span class="token punctuation">[</span><span class="token keyword">IF</span> <span class="token keyword">EXISTS</span><span class="token punctuation">]</span> 数据库名<span class="token punctuation">.</span>存储过程名<span class="token punctuation">;</span></code></pre>
+
+</div><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-hand-coin-line"></use></svg></span><div id="reward-comment">I'm so poor, Could you give me money?</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.zengchen233.cn/img/202112251913240.png"><img loading="lazy" src="https://cdn.zengchen233.cn/img/202112251913240.png" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-alipay-line"></use></svg></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.zengchen233.cn/img/202112251913559.png"><img loading="lazy" src="https://cdn.zengchen233.cn/img/202112251913559.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-wechat-pay-line"></use></svg></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>曾晨</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://zengchen233.cn/posts/6b9ad521/" title="Mysql的学习笔记(四)">https://zengchen233.cn/posts/6b9ad521/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/c01e70d5/" rel="prev" title="IDEA常规快捷键"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">IDEA常规快捷键</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/91d93a2e/" rel="next" title="Mysql的学习笔记(三)"><span class="post-nav-text">Mysql的学习笔记(三)</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>要不要和我说些什么？</span><br></div><div id="waline"></div><script>Yun.utils.getScript("https://cdn.jsdelivr.net/npm/@waline/client/dist/Waline.min.js", () => {
+  const walineConfig = {"enable":true,"serverURL":"https://blog-comments-phi.vercel.app/","comment":true,"emoji":["https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/bilibili","https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/weibo"],"locale":{"placeholder":"快来评论一下吧~","admin":"博主"},"el":"#waline","lang":"zh-CN"}
+  walineConfig.path = "/posts/6b9ad521/"
+  walineConfig.dark = 'html[data-user-color-scheme="dark"]'
+  new Waline(walineConfig)
+}, window.Waline);</script></div></main><footer class="sidebar-translate" id="footer"><div class="beian"><a rel="noopener" href="https://beian.miit.gov.cn/" target="_blank">鄂ICP备20014277号-1</a></div><div class="copyright"><span>&copy; 2020 – 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> 曾晨</span></div><div class="live_time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-06-15T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = " " + passDay + " 天 " + passHour + " 小时 " + passMinute + " 分 " + passSecond + " 秒";
+}
+blog_live_time();
+</script></div><div id="busuanzi"><span id="busuanzi_container_site_uv" title="总访客量"><span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye-line"></use></svg></span><span id="busuanzi_value_site_pv"></span></span><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div class="footer-support"><span>本网站由</span><a class="footer-support-logo" href="https://www.upyun.com/?utm_source=lianmeng&amp;utm_medium=referral" target="blank" title="又拍云"><img height="30" src="https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/logo/upyun-logo.png" alt="又拍云"></a><span>提供 CDN 加速</span></div></footer><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div><!-- hexo injector body_end start --><script src="https://cdn.jsdelivr.net/npm/hexo-tag-common@0.0.5/js/index.js"></script><!-- hexo injector body_end end --></body></html>
